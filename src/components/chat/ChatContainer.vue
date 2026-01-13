@@ -3,14 +3,18 @@
     <div class="messages-area">
       <div class="message-item assistant">
         <div class="message-wrapper">
-          <div class="avatar assistant-avatar">AI</div>
-          <div class="message-text">你好！我是 AI 助手，有什么可以帮助你的吗？</div>
+          <message-bubble role="assistant" />
         </div>
       </div>
       <div class="message-item user">
         <div class="message-wrapper">
-          <div class="avatar user-avatar">U</div>
-          <div class="message-text">你好，请介绍一下你自己</div>
+          <message-bubble role="user" />
+        </div>
+      </div>
+
+      <div v-for="item in messages" class="message-item" :class="item.role">
+        <div class="message-wrapper">
+          <message-bubble :role="item.role" :content="item.content"/>
         </div>
       </div>
     </div>
@@ -21,7 +25,21 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import InputArea from './InputArea.vue'
+import MessageBubble from './MessageBubble.vue';
+
+const messages = ref([
+  {
+    role: "assistant",
+    content: "我是你的AI助手，你有什么问题"
+  },
+  {
+    role: "user",
+    content: "你说啥"
+  },
+])
+
 </script>
 
 <style scoped>
@@ -43,7 +61,7 @@ import InputArea from './InputArea.vue'
   max-width: 800px;
   margin: 0 auto;
   width: 100%;
-  background: grey;
+  /* background: grey; */
 }
 
 .message-item {
@@ -61,27 +79,6 @@ import InputArea from './InputArea.vue'
   display: flex;
   gap: 16px;
   padding: 0 20px;
-}
-
-.avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  font-size: 14px;
-  font-weight: bold;
-  color: white;
-}
-
-.assistant-avatar {
-  background: #10a37f;
-}
-
-.user-avatar {
-  background: #5436da;
 }
 
 .message-text {
