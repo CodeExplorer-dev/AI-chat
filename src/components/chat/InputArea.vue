@@ -49,11 +49,6 @@ const emit = defineEmits(['send'])
 const textAreaRef = ref(null)
 const inputText = ref('')
 
-// 处理输入事件，调整高度
-// const handleInput = () => {
-//   adjustHeight()
-// }
-
 // 处理回车键
 const handleEnter = (e) => {
   if (!e.shiftKey && inputText.value.trim()) {
@@ -66,26 +61,11 @@ const handleEnter = (e) => {
 const handleSend = () => {
   if (inputText.value.trim() && !props.disabled) {
     console.log(inputText.value)
-    // emit('send', inputText.value.trim())
     inputText.value = ''
-    // adjustHeight()
+
   }
 }
 
-// 调整输入框高度
-// const adjustHeight = () => {
-//   nextTick(() => {
-//     if (textAreaRef.value) {
-//       console.log(textAreaRef.value)
-//       textAreaRef.value.style.height = 'auto'
-//       const newHeight = Math.min(textAreaRef.value.scrollHeight, 120)
-//       textAreaRef.value.style.height = `${newHeight}px`
-//     }
-//   })
-// }
-
-// 初始化高度
-// watch(() => inputText.value, adjustHeight)
 </script>
 
 <style scoped>
@@ -112,7 +92,7 @@ const handleSend = () => {
 
 .text-input {
   flex: 1;
-  min-height: 24px;
+  min-height: 130px;
   max-height: 200px;
   padding: 0;
   border: none;
