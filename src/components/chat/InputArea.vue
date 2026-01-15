@@ -3,7 +3,7 @@
     <div class="input-wrapper">
       <textarea
         ref="textAreaRef"
-        v-model="inputText"
+        v-model="props.inputText"
         class="text-input"
         :placeholder="placeholder"
         @keydown.enter="handleEnter"
@@ -18,9 +18,7 @@
         @click="handleSend"
         :disabled="!inputText.trim() || disabled"
       >
-        <svg class="send-icon" viewBox="0 0 24 24">
-          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-        </svg>
+        <el-icon class="send-icon" :size="30" ><Top /></el-icon>
       </button>
     </div>
   </div>
@@ -28,6 +26,7 @@
 
 <script setup>
 import { ref, watch, nextTick } from 'vue'
+import { Top } from '@element-plus/icons-vue'
 
 const props = defineProps({
   placeholder: {
@@ -41,13 +40,15 @@ const props = defineProps({
   disabled: {
     type: Boolean,
     default: false
+  },
+  inputText: {
+    type: String,
+    default: ''
   }
 })
 
-const emit = defineEmits(['send'])
-
 const textAreaRef = ref(null)
-const inputText = ref('')
+const emit = defineEmits(['send'])
 
 // 处理回车键
 const handleEnter = (e) => {

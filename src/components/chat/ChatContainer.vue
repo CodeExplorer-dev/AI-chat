@@ -18,18 +18,19 @@
         </div>
       </div>
     </div>
+    {{ inputText }}
     <div class="input-area">
-      <InputArea />
+      <InputArea v-model="inputText" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 import InputArea from './InputArea.vue'
 import MessageBubble from './MessageBubble.vue';
 
-const messages = ref([
+const messages = reactive([
   {
     role: "assistant",
     content: "我是你的AI助手，你有什么问题"
@@ -39,6 +40,8 @@ const messages = ref([
     content: "你说啥"
   },
 ])
+
+const inputText = ref('')
 
 </script>
 
