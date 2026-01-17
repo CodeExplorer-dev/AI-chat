@@ -3,20 +3,20 @@
     <div class="input-wrapper">
       <textarea
         ref="textAreaRef"
-        v-model="props.inputText"
+        v-model="localInputText"
         class="text-input"
         :placeholder="placeholder"
-        @keydown.enter="handleEnter"
         :rows="3"
         :maxlength="maxLength"
         :disabled="disabled"
+        @input="emitUpdate"
       ></textarea>
       
       <!-- 发送按钮 -->
       <button 
         class="send-button"
         @click="handleSend"
-        :disabled="!inputText.trim() || disabled"
+        :disabled="!localInputText.trim() || disabled"
       >
         <el-icon class="send-icon" :size="30" ><Top /></el-icon>
       </button>
@@ -41,29 +41,32 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  inputText: {
+  modelValue: { // 使用 Vue 3 标准命名
     type: String,
     default: ''
   }
 })
 
-const textAreaRef = ref(null)
-const emit = defineEmits(['send'])
+const emit = defineEmits(['update:modelValue', 'send'])
 
-// 处理回车键
-const handleEnter = (e) => {
-  if (!e.shiftKey && inputText.value.trim()) {
-    e.preventDefault()
-    handleSend()
-  }
+// 本地响应式变量
+const textAreaRef = ref(null)
+const localInputText = ref(props.modelValue)
+
+// 监听父组件的值变化
+watch(() => props.modelValue, (newVal) => {
+  localInputText.value = newVal
+})
+
+// 更新父组件的值
+const emitUpdate = () => {
+  emit('update:modelValue', localInputText.value)
 }
 
 // 发送消息
 const handleSend = () => {
-  if (inputText.value.trim() && !props.disabled) {
-    console.log(inputText.value)
-    inputText.value = ''
-
+  if (localInputText.value.trim() && !props.disabled) {
+    emit('send')
   }
 }
 

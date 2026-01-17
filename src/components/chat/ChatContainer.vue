@@ -20,28 +20,32 @@
     </div>
     {{ inputText }}
     <div class="input-area">
-      <InputArea v-model="inputText" />
+      <InputArea 
+        v-model="inputText"
+        @send="handleSend"
+       />
     </div>
   </div>
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue';
+import { computed, ref } from 'vue'
 import InputArea from './InputArea.vue'
-import MessageBubble from './MessageBubble.vue';
+import MessageBubble from './MessageBubble.vue'
+import { useChatStore } from '@/store/chatStore'
 
-const messages = reactive([
-  {
-    role: "assistant",
-    content: "我是你的AI助手，你有什么问题"
-  },
-  {
-    role: "user",
-    content: "你说啥"
-  },
-])
-
+const chatStore = useChatStore()
 const inputText = ref('')
+
+const messages = computed(() => chatStore.currentMessages)
+
+const handleSend = () => {
+  if (!inputText.value.trim()) return
+  console.log('消息是：', inputText.value)
+  
+  // chatStore.addUserMessage(inputText.value.trim())
+  inputText.value = ''
+}
 
 </script>
 
