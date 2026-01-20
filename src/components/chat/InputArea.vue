@@ -75,7 +75,7 @@ const handleSend = () => {
 <style scoped>
 .input-container {
   width: 100%;
-  max-width: 850px;
+  max-width: 900px;
 }
 
 .input-wrapper {

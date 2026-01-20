@@ -65,10 +65,18 @@ const handleSend = () => {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  max-width: 800px;
+  max-width: 850px;
   margin: 0 auto;
   width: 100%;
-  /* background: grey; */
+  overflow-y: overlay;
+}
+
+.messages-area::-webkit-scrollbar {
+  width: 10px;
+}
+
+.messages-area::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .message-item {
@@ -81,7 +89,7 @@ const handleSend = () => {
 }
 
 .message-wrapper {
-  max-width: 800px;
+  max-width: 850px;
   margin: 0 auto;
   display: flex;
   gap: 16px;
@@ -98,8 +106,7 @@ const handleSend = () => {
 .input-area {
   background: white;
   display: flex;
-  /* justify-content: center; */
-  max-width: 850px;
+  max-width: 900px;
   margin: 0 auto;
   margin-bottom: 20px;
   width: 100%;
