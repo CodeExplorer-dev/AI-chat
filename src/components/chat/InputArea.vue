@@ -3,20 +3,19 @@
     <div class="input-wrapper">
       <textarea
         ref="textAreaRef"
-        v-model="localInputText"
+        v-model="inputText"
         class="text-input"
         :placeholder="placeholder"
         :rows="3"
         :maxlength="maxLength"
         :disabled="disabled"
-        @input="emitUpdate"
       ></textarea>
       
       <!-- 发送按钮 -->
       <button 
         class="send-button"
         @click="handleSend"
-        :disabled="!localInputText.trim() || disabled"
+        :disabled="!inputText.trim() || disabled"
       >
         <el-icon class="send-icon" :size="30" ><Top /></el-icon>
       </button>
@@ -40,36 +39,16 @@ const props = defineProps({
   disabled: {
     type: Boolean,
     default: false
-  },
-  modelValue: { // 使用 Vue 3 标准命名
-    type: String,
-    default: ''
   }
 })
 
-const emit = defineEmits(['update:modelValue', 'send'])
+const emit = defineEmits(['send'])
 
-// 本地响应式变量
-const textAreaRef = ref(null)
-const localInputText = ref(props.modelValue)
+const inputText = defineModel()
 
-// 监听父组件的值变化
-watch(() => props.modelValue, (newVal) => {
-  localInputText.value = newVal
-})
-
-// 更新父组件的值
-const emitUpdate = () => {
-  emit('update:modelValue', localInputText.value)
-}
-
-// 发送消息
 const handleSend = () => {
-  if (localInputText.value.trim() && !props.disabled) {
-    emit('send')
-  }
+  emit('send')
 }
-
 </script>
 
 <style scoped>

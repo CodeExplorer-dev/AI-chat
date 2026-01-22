@@ -3,18 +3,18 @@
     <div class="messages-area">
       <div class="message-item assistant">
         <div class="message-wrapper">
-          <message-bubble role="assistant" />
+          <message-bubble role="user" />
         </div>
       </div>
       <div class="message-item user">
         <div class="message-wrapper">
-          <message-bubble role="user" />
+          <message-bubble role="assistant" />
         </div>
       </div>
 
       <div v-for="item in messages" class="message-item" :class="item.role">
         <div class="message-wrapper">
-          <message-bubble :role="item.role" :content="item.content"/>
+          <message-bubble :role="item.role" :message="item.message"/>
         </div>
       </div>
     </div>
@@ -43,7 +43,7 @@ const handleSend = () => {
   if (!inputText.value.trim()) return
   console.log('消息是：', inputText.value)
   
-  // chatStore.addUserMessage(inputText.value.trim())
+  chatStore.addUserMessage(inputText.value.trim())
   inputText.value = ''
 }
 

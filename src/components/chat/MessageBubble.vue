@@ -1,7 +1,7 @@
 <template>
 <div class="message-bubble" :class="role">
   <div class="message-content">
-    {{ content }}
+    {{ message }}
   </div>
   <div v-if="showOperations" class="message-operations">
     <button @click="$emit('copy')">复制</button>
@@ -16,9 +16,9 @@ const props = defineProps({
     type: String,
     default: 'user'
   },
-  content: {
+  message: {
     type: String,
-    default: 'asd'
+    default: '默认消息'
   },
   showOperations: {
     type: Boolean,

@@ -72,7 +72,7 @@ export const useChatStore = defineStore('chat', () => {
       }
 
       // 模拟AI回复
-      simulateAIResponse()
+      // simulateAIResponse()
     }
 
     return message
