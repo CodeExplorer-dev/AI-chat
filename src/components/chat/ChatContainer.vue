@@ -1,17 +1,6 @@
 <template>
   <div class="chat-container">
     <div class="messages-area">
-      <div class="message-item assistant">
-        <div class="message-wrapper">
-          <message-bubble role="user" />
-        </div>
-      </div>
-      <div class="message-item user">
-        <div class="message-wrapper">
-          <message-bubble role="assistant" />
-        </div>
-      </div>
-
       <div v-for="item in messages" class="message-item" :class="item.role">
         <div class="message-wrapper">
           <message-bubble :role="item.role" :message="item.message"/>
@@ -44,6 +33,8 @@ const handleSend = () => {
   console.log('消息是：', inputText.value)
   
   chatStore.addUserMessage(inputText.value.trim())
+
+  console.log('当前messages:', messages.value)
   inputText.value = ''
 }
 
@@ -85,7 +76,7 @@ const handleSend = () => {
 }
 
 .message-item.user {
-  background: #f7f7f8;
+  background: #fff;
 }
 
 .message-wrapper {

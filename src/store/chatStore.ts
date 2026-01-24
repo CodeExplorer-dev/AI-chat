@@ -72,7 +72,7 @@ export const useChatStore = defineStore('chat', () => {
       }
 
       // 模拟AI回复
-      // simulateAIResponse()
+      simulateAIResponse()
     }
 
     return message
@@ -93,39 +93,6 @@ export const useChatStore = defineStore('chat', () => {
     conversation.messages.push(aiMessage)
     conversation.updateTime = new Date()
 
-    // 模拟流式响应
-    setTimeout(() => {
-      const messages = [
-        "我在思考你的问题...",
-        "让我分析一下...",
-        "我认为..."
-      ]
-
-      let currentText = ''
-      let index = 0
-
-      const interval = setInterval(() => {
-        if (index < messages.length) {
-          currentText += messages[index] + ' '
-          
-          // 更新消息内容
-          const message = conversation.messages.find(m => m.id === aiMessage.id)
-          if (message) {
-            message.message = currentText
-          }
-
-          index++
-        } else {
-          clearInterval(interval)
-          
-          // 完成消息
-          const message = conversation.messages.find(m => m.id === aiMessage.id)
-          if (message) {
-            message.status = 'sent'
-          }
-        }
-      }, 500)
-    }, 300)
   }
 
 
