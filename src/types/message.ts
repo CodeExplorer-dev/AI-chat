@@ -1,16 +1,17 @@
 export interface Message {
   id: number,
+  session_id: string
   role: 'user' | 'assistant',
-  message: string,
-  timestamp: Date
+  content: string,
+  created_at: Date
   status: 'loading' | 'sent' | 'error'
   errorMsg?: string
 }
 
-export interface Conversation {
-  id: number,
+export interface Session {
+  id: string,
   title: string,
   messages: Message[],
-  createTime: Date,
-  updateTime: Date
+  created_at: Date,
+  updated_at: Date
 }

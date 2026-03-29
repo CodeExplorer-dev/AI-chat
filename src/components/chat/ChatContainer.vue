@@ -3,7 +3,7 @@
     <div class="messages-area">
       <div v-for="item in messages" class="message-item" :class="item.role">
         <div class="message-wrapper">
-          <message-bubble :role="item.role" :message="item.message"/>
+          <message-bubble :role="item.role" :content="item.content"/>
         </div>
       </div>
     </div>

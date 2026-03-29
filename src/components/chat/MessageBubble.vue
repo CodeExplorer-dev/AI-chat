@@ -4,7 +4,7 @@
     <!-- 消息气泡 -->
     <div class="message-bubble" :class="role">
       <div class="message-content">
-        {{ message }}
+        {{ content }}
       </div>
     </div>
 
@@ -39,7 +39,7 @@ const props = defineProps({
     type: String,
     default: 'user'
   },
-  message: {
+  content: {
     type: String,
     default: '默认消息'
   },

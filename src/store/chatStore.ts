@@ -1,74 +1,80 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import type { Message, Conversation } from '@/types/message'
+import type { Message, Session } from '@/types/message'
 
 export const useChatStore = defineStore('chat', () => {
   // 状态
-  const conversations = ref<Conversation[]>([])
-  const currentConversationId = ref<number | null>(null)
+  const sessions = ref<Session[]>([])
+  const currentSessionId = ref<string | null>(null)
   
   // 计算属性
   // 当前的对话
-  const currentConversation = computed(() => {
-    return conversations.value.find(conversation => conversation.id === currentConversationId.value)
+  const currentSession = computed(() => {
+    return sessions.value.find(session => session.id === currentSessionId.value)
   })
 
   // 当前的消息列表
   const currentMessages = computed(() => {
-    return currentConversation.value?.messages || []
+    return currentSession.value?.messages || []
   })
 
   // 生成会话标题
-  const generateConversationTitle = (message: string) => {
-    if (message.length <= 20) return message
-    return message.substring(0, 20) + '...'
+  const generateSessionTitle = (content: string) => {
+    if (content.length <= 20) return content
+    return content.substring(0, 20) + '...'
   }
 
-  // 生成Id
-  const generateId = () => {
-    return Date.now();
-  };
+ // 生成 Session UUID
+const generateSessionId = () => {
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+}
+
+// 生成 Message ID
+const generateMessageId = () => {
+  return Date.now()
+}
 
   // 创建新会话
-  const createConversation = () => {
-    const conversation: Conversation = {
-      id: generateId(),
+  const createSession = () => {
+    const session: Session = {
+      id: generateSessionId(),
       title: '新对话',
       messages: [],
-      createTime: new Date(),
-      updateTime: new Date()
+      created_at: new Date(),
+      updated_at: new Date()
     }
 
-    conversations.value.push(conversation)
-    currentConversationId.value = conversation.id
+    sessions.value.push(session)
+    currentSessionId.value = session.id
 
-    return conversation
+    return session
   }
 
   // 添加用户消息
   const addUserMessage = (content: string) => {
     // 如果没有当前会话，创建一个
-    if (!currentConversation.value) {
-      createConversation();
+    if (!currentSession.value) {
+      createSession();
     }
 
     const message: Message = {
-      id: generateId(),
+      id: generateMessageId(),
+      session_id: currentSessionId.value!,
       role: 'user',
-      message: content,
-      timestamp: new Date(),
+      content: content,
+      created_at: new Date(),
       status: 'sent'
     };
 
     // 添加到当前会话
-    const conversation = currentConversation.value // 当前会话
-    if (conversation) {
-      conversation.messages.push(message)
-      conversation.updateTime = new Date()
+    const session = currentSession.value // 当前会话
+    if (session) {
+      session.messages.push(message)
+      session.updated_at = new Date()
 
       // 如果是第一条消息，设置标题
-      if (conversation.messages.length === 1) {
-        conversation.title = generateConversationTitle(content)
+      if (session.messages.length === 1) {
+        session.title = generateSessionTitle(content)
       }
 
       // 模拟AI回复
@@ -80,44 +86,45 @@ export const useChatStore = defineStore('chat', () => {
 
   // 模拟AI回答
   const simulateAIResponse = () => {
-    const conversation = currentConversation.value
+    const session = currentSession.value
 
     const aiMessage: Message = {
-      id: generateId(),
+      id: generateMessageId(),
+      session_id: session.id,
       role: 'assistant',
-      message: '你好',
-      timestamp: new Date(),
+      content: '你好',
+      created_at: new Date(),
       status: 'loading'
     }
 
-    conversation.messages.push(aiMessage)
-    conversation.updateTime = new Date()
+    session.messages.push(aiMessage)
+    session.updated_at = new Date()
 
   }
 
 
   const init = () => {
     // 如果没有会话，创建一个
-    if (conversations.value.length === 0) {
-      createConversation()
+    if (sessions.value.length === 0) {
+      createSession()
     }
     
     // 如果没有当前会话，选择第一个
-    if (!currentConversationId.value && conversations.value.length > 0) {
-      currentConversationId.value = conversations.value[0].id
+    if (!currentSessionId.value && sessions.value.length > 0) {
+      currentSessionId.value = sessions.value[0].id
     }
   }
 
   return {
     // 属性
-    conversations,
-    currentConversationId,
+    sessions,
+    currentSessionId,
     // 计算属性
-    currentConversation,
+    currentSession,
     currentMessages,
     // 方法
     // 方法
-    createConversation,
+    createSession,
     addUserMessage,
     init
   }
