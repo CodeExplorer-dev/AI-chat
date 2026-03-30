@@ -15,20 +15,16 @@
 
       <div class="aside-menu">
         <el-menu
-          default-active="2"
+          :default-active="currentSessionId"
           class="el-menu-vertical-demo"
+          @select="handleSelectSession"
         >
-          <el-menu-item index="1">
-            <template #title>对话 1</template>
-          </el-menu-item>
-          <el-menu-item index="2">
-            <template #title>对话 2</template>
-          </el-menu-item>
-          <el-menu-item index="3">
-            <template #title>对话 3</template>
-          </el-menu-item>
-          <el-menu-item index="4">
-            <template #title>对话 4</template>
+          <el-menu-item 
+            v-for="session in sessions" 
+            :key="session.id" 
+            :index="session.id"
+          >
+            <template #title>{{ session.title }}</template>
           </el-menu-item>
         </el-menu>
       </div>
@@ -44,7 +40,7 @@
 
 <script setup>
 import { Fold, Expand, Plus } from '@element-plus/icons-vue'
-import { ref } from 'vue'
+import { useChatStore } from '@/store/chatStore'
 
 
 defineProps({
@@ -56,6 +52,10 @@ defineProps({
 
 const emit = defineEmits(['toggle'])
 
+const chatStore = useChatStore()
+const { sessions, currentSessionId, createSession } = chatStore
+
+
 // const isCollapsed = ref(false)
 // const toggleSlide = () => {
 //   isCollapsed.value = !isCollapsed.value
@@ -63,7 +63,13 @@ const emit = defineEmits(['toggle'])
 
 const handleNewChat = () => {
   console.log('新对话')
+  createSession()
 }
+
+const handleSelectSession = (index) => {
+  chatStore.currentSessionId = index
+}
+
 </script>
 
 <style scoped lang="scss">
