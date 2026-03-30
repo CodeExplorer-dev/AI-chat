@@ -1,11 +1,26 @@
 <template>
   <div class="chat-container">
     <div class="messages-area">
-      <div v-for="item in messages" class="message-item" :class="item.role">
-        <div class="message-wrapper">
-          <message-bubble :role="item.role" :content="item.content"/>
-        </div>
+
+      <!-- 空状态 -->
+      <div v-if="messages.length === 0" class="empty-state">
+        <el-icon :size="60"><ChatDotRound /></el-icon>
+        <p>还没有消息</p>
+        <p>发送消息开始对话</p>
       </div>
+
+      <!-- 消息列表 -->
+      <template v-else>
+        <div v-for="item in messages" :key="item.id" class="message-item" :class="item.role">
+          <div class="message-wrapper">
+            <message-bubble
+              :role="item.role"
+              :content="item.content"
+              :timestamp="item.created_at"
+            />
+          </div>
+        </div>
+      </template>
     </div>
     {{ inputText }}
     <div class="input-area">
@@ -18,15 +33,25 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import InputArea from './InputArea.vue'
 import MessageBubble from './MessageBubble.vue'
 import { useChatStore } from '@/store/chatStore'
+import { ChatDotRound } from '@element-plus/icons-vue'
 
 const chatStore = useChatStore()
 const inputText = ref('')
 
 const messages = computed(() => chatStore.currentMessages)
+
+// 自动滚动到底部
+// watch(() => messages.value.length, () => {
+//   nextTick(() => {
+//     if (messagesAreaRef.value) {
+//       messagesAreaRef.value.scrollTop = messagesAreaRef.value.scrollHeight
+//     }
+//   })
+// })
 
 const handleSend = () => {
   if (!inputText.value.trim()) return
@@ -101,5 +126,20 @@ const handleSend = () => {
   margin: 0 auto;
   margin-bottom: 20px;
   width: 100%;
+}
+
+/* 空状态样式 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #999;
+  gap: 10px;
+}
+.empty-state p {
+  font-size: 16px;
+  margin: 0;
 }
 </style>
