@@ -22,47 +22,35 @@
         </div>
       </template>
     </div>
+    
     {{ inputText }}
     <div class="input-area">
       <InputArea 
         v-model="inputText"
         @send="handleSend"
-       />
+      />
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
+import { ChatDotRound } from '@element-plus/icons-vue'
 import InputArea from './InputArea.vue'
 import MessageBubble from './MessageBubble.vue'
 import { useChatStore } from '@/store/chatStore'
-import { ChatDotRound } from '@element-plus/icons-vue'
 
 const chatStore = useChatStore()
 const inputText = ref('')
 
 const messages = computed(() => chatStore.currentMessages)
 
-// 自动滚动到底部
-// watch(() => messages.value.length, () => {
-//   nextTick(() => {
-//     if (messagesAreaRef.value) {
-//       messagesAreaRef.value.scrollTop = messagesAreaRef.value.scrollHeight
-//     }
-//   })
-// })
-
 const handleSend = () => {
   if (!inputText.value.trim()) return
-  console.log('消息是：', inputText.value)
   
   chatStore.addUserMessage(inputText.value.trim())
-
-  console.log('当前messages:', messages.value)
   inputText.value = ''
 }
-
 </script>
 
 <style scoped>
@@ -81,10 +69,7 @@ const handleSend = () => {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  max-width: 850px;
-  margin: 0 auto;
   width: 100%;
-  overflow-y: overlay;
 }
 
 .messages-area::-webkit-scrollbar {
@@ -97,26 +82,10 @@ const handleSend = () => {
 
 .message-item {
   width: 100%;
-  padding: 20px 0;
-}
-
-.message-item.user {
-  background: #fff;
 }
 
 .message-wrapper {
-  max-width: 850px;
-  margin: 0 auto;
-  display: flex;
-  gap: 16px;
-  padding: 0 20px;
-}
-
-.message-text {
-  flex: 1;
-  line-height: 1.6;
-  color: #374151;
-  font-size: 20px;
+  width: 100%;
 }
 
 .input-area {
