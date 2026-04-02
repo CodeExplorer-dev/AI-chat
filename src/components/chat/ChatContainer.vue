@@ -17,6 +17,7 @@
               :role="item.role"
               :content="item.content"
               :timestamp="item.created_at"
+              :status="item.status"
             />
           </div>
         </div>

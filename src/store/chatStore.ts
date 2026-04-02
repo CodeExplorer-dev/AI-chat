@@ -118,6 +118,8 @@ export const useChatStore = defineStore('chat', () => {
         updated_at: new Date(item.updated_at)
       }))
 
+      
+
       if (sessions.value.length > 0) {
         currentSessionId.value = sessions.value[0].id
         await loadMessages(sessions.value[0].id)

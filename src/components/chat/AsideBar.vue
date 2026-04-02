@@ -41,6 +41,7 @@
 <script setup>
 import { Fold, Expand, Plus } from '@element-plus/icons-vue'
 import { useChatStore } from '@/store/chatStore'
+import { computed } from 'vue'
 
 
 defineProps({
@@ -53,7 +54,9 @@ defineProps({
 const emit = defineEmits(['toggle'])
 
 const chatStore = useChatStore()
-const { sessions, currentSessionId, createSession } = chatStore
+const sessions = computed(() => chatStore.sessions)
+const currentSessionId = computed(() => chatStore.currentSessionId)
+const { createSession, switchSession } = chatStore
 
 
 // const isCollapsed = ref(false)
@@ -66,8 +69,8 @@ const handleNewChat = () => {
   createSession()
 }
 
-const handleSelectSession = (index) => {
-  chatStore.currentSessionId = index
+const handleSelectSession = async (index) => {
+  await switchSession(index)
 }
 
 </script>

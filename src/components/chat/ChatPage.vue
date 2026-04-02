@@ -15,6 +15,7 @@
 import { ref, onMounted, onUnmounted, provide } from 'vue'
 import AsideBar from './AsideBar.vue'
 import ChatContainer from './ChatContainer.vue'
+import { useChatStore } from '@/store/chatStore'
 
 const isCollapsed = ref(false)
 let mediaQuery = null
@@ -53,8 +54,11 @@ const initMediaQuery = () => {
   handleMediaChange(mediaQuery)
 }
 
+const chatStore = useChatStore()
+
 onMounted(() => {
   initMediaQuery()
+  chatStore.init()
 })
 
 onUnmounted(() => {
