@@ -23,8 +23,22 @@
             v-for="session in sessions" 
             :key="session.id" 
             :index="session.id"
+            class="title_container"
           >
-            <template #title>{{ session.title }}</template>
+            <span>{{ session.title }}</span>
+            <el-tooltip
+              placement="bottom-start"
+              effect="light"
+              class="title_more"
+            >
+              <template #content>
+                <div class="more_container">
+                  <el-button @click="rename(session.id)">重命名</el-button>
+                  <el-button @click="remove(session.id)">删除</el-button>
+                </div>
+              </template>
+              <el-icon><MoreFilled /></el-icon>
+            </el-tooltip>
           </el-menu-item>
         </el-menu>
       </div>
@@ -39,7 +53,7 @@
 </template>
 
 <script setup>
-import { Fold, Expand, Plus } from '@element-plus/icons-vue'
+import { Fold, Expand, Plus, MoreFilled } from '@element-plus/icons-vue'
 import { useChatStore } from '@/store/chatStore'
 import { computed } from 'vue'
 
@@ -71,6 +85,14 @@ const handleNewChat = () => {
 
 const handleSelectSession = async (index) => {
   await switchSession(index)
+}
+
+const rename = (sessionId) => {
+  console.log('重命名：', sessionId)
+}
+
+const remove = (sessionId) => {
+  console.log('删除：', sessionId)
 }
 
 </script>
@@ -220,6 +242,20 @@ const handleSelectSession = async (index) => {
   background: #d1d5db;
   font-weight: bold;
 }
+
+.title_container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.title_more {
+  .more_container {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+
 
 /* 响应式设计 */
 @media (max-width: 768px) {
