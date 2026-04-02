@@ -22,10 +22,10 @@ request.interceptors.request.use(
 // 响应拦截器
 request.interceptors.response.use(
   (response) => {
-    const res = response.data
+    const res = response
     
     // 根据后端约定的状态码判断
-    if (res.code !== 200) {
+    if (res.error) {
       // 处理业务错误
       console.error('业务错误:', res.message)
       return Promise.reject(new Error(res.message || 'Error'))
@@ -37,3 +37,5 @@ request.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+
+export default request

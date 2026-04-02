@@ -1,6 +1,9 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import type { Message, Session } from '@/types/message'
+import { getAllSessions, createSession as createSessionAPI } from '@/api/session'
+import { getSessionsHistoryById, chat as sendMessageAPI } from '@/api/message'
+import { ElMessage } from 'element-plus'
 
 export const useChatStore = defineStore('chat', () => {
   // 状态
@@ -25,29 +28,34 @@ export const useChatStore = defineStore('chat', () => {
   }
 
  // 生成 Session UUID
-const generateSessionId = () => {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-}
+  const generateSessionId = () => {
+    return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  }
 
-// 生成 Message ID
-const generateMessageId = () => {
-  return Date.now()
-}
+  // 生成 Message ID
+  const generateMessageId = () => {
+    return Date.now()
+  }
 
   // 创建新会话
-  const createSession = () => {
-    const session: Session = {
-      id: generateSessionId(),
-      title: '新对话',
-      messages: [],
-      created_at: new Date(),
-      updated_at: new Date()
+  const createSession = async () => {
+    try {
+      const res = await createSessionAPI()
+      const newSession: Session = {
+        id: res.data.id,
+        title: res.data.title,
+        messages: [],
+        created_at: new Date(),
+        updated_at: new Date()
+      }
+      sessions.value.push(newSession)
+      currentSessionId.value = newSession.id
+      console.log(sessions)
+      return newSession
+    } catch (error) {
+      ElMessage.error('创建会话失败')
+      throw error
     }
-
-    sessions.value.push(session)
-    currentSessionId.value = session.id
-
-    return session
   }
 
   // 添加用户消息
