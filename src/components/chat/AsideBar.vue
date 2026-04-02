@@ -33,7 +33,7 @@
             >
               <template #content>
                 <div class="more_container">
-                  <el-button @click="rename(session.id)">重命名</el-button>
+                  <el-button @click="rename(session)">重命名</el-button>
                   <el-button type="danger" @click="remove(session.id)" plain >删除</el-button>
                 </div>
               </template>
@@ -56,7 +56,8 @@
 import { Fold, Expand, Plus, MoreFilled } from '@element-plus/icons-vue'
 import { useChatStore } from '@/store/chatStore'
 import { computed } from 'vue'
-
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { updateSessionTitle } from '@/api/session';
 
 defineProps({
   isCollapsed: {
@@ -87,12 +88,71 @@ const handleSelectSession = async (index) => {
   await switchSession(index)
 }
 
-const rename = (sessionId) => {
-  console.log('重命名：', sessionId)
+// 重命名方法
+const rename = async (session) => {
+  try {
+    const { value: newTitle } = await ElMessageBox.prompt('请输入新的会话名称', '重命名', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      inputValue: session.title,
+      inputPlaceholder: '请输入新名称',
+      inputValidator: (newTitle) => {
+        if (!newTitle || newTitle.trim() === '') {
+          return '名称不能为空'
+        }
+        if (newTitle.length > 50) {
+          return '名称不能超过50个字符'
+        }
+        return true
+      }
+    })
+    
+    // 如果名称没有变化，不执行重命名
+    if (newTitle === session.title) {
+      return
+    }
+    
+    const sessionId = session.id
+    console.log(sessionId)
+    console.log('新标题：', newTitle)
+    
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('重命名出错:', error)
+    }
+  }
 }
 
-const remove = (sessionId) => {
-  console.log('删除：', sessionId)
+const remove = async (sessionId) => {
+  try {
+    await ElMessageBox.confirm(
+      '确定删除此对话吗？',
+      'Warning',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+    )
+    
+    // 用户确认删除
+    console.log('删除：', sessionId)
+    
+    ElMessage({
+      type: 'success',
+      message: '删除成功',
+    })
+    
+  } catch (error) {
+    if (error === 'cancel') {
+      ElMessage({
+        type: 'info',
+        message: '已取消删除',
+      })
+    } else if (error === 'close') {
+      console.log('用户点击了关闭按钮')
+    }
+  }
 }
 
 </script>
