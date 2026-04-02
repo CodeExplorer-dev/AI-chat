@@ -60,6 +60,7 @@ export const useChatStore = defineStore('chat', () => {
 
   // 添加用户消息
   const addUserMessage = async (content: string) => {
+    console.log('当前消息：', content)
     // 如果没有当前会话，创建一个
     if (!currentSession.value) {
       await createSession();
@@ -75,7 +76,6 @@ export const useChatStore = defineStore('chat', () => {
       created_at: new Date(),
       status: 'sent'
     };
-    console.log(userMsg)
     
     // 添加到当前会话
     currentSession.value.messages.push(userMsg)
@@ -83,7 +83,8 @@ export const useChatStore = defineStore('chat', () => {
     // 调用API
     try {
       const res = await sendMessageAPI(sessionId, content)
-      console.log('当前消息：', res)
+      console.log('API响应:', res) 
+
       const assistantMsg: Message = {
         id: generateMessageId(),
         session_id: sessionId,
