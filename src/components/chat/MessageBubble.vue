@@ -166,7 +166,7 @@ const formatTime = (date) => {
 
 /* 用户消息：内容靠左 */
 .message-container.user .message-content-area {
-  align-items: flex-start;
+  align-items: flex-end;
 }
 
 /* 气泡 */
