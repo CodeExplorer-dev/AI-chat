@@ -59,67 +59,97 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   // 添加用户消息
-  const addUserMessage = (content: string) => {
+  const addUserMessage = async (content: string) => {
     // 如果没有当前会话，创建一个
     if (!currentSession.value) {
-      createSession();
+      await createSession();
     }
 
-    const message: Message = {
+    const sessionId = currentSessionId.value!
+
+    const useMsg: Message = {
       id: generateMessageId(),
-      session_id: currentSessionId.value!,
+      session_id: sessionId,
       role: 'user',
       content: content,
       created_at: new Date(),
       status: 'sent'
     };
-
-    // 添加到当前会话
-    const session = currentSession.value // 当前会话
-    if (session) {
-      session.messages.push(message)
-      session.updated_at = new Date()
-
-      // 如果是第一条消息，设置标题
-      if (session.messages.length === 1) {
-        session.title = generateSessionTitle(content)
-      }
-
-      // 模拟AI回复
-      simulateAIResponse()
-    }
-
-    return message
-  }
-
-  // 模拟AI回答
-  const simulateAIResponse = () => {
-    const session = currentSession.value
-
-    const aiMessage: Message = {
-      id: generateMessageId(),
-      session_id: session.id,
-      role: 'assistant',
-      content: '你好',
-      created_at: new Date(),
-      status: 'loading'
-    }
-
-    session.messages.push(aiMessage)
-    session.updated_at = new Date()
-
-  }
-
-
-  const init = () => {
-    // 如果没有会话，创建一个
-    if (sessions.value.length === 0) {
-      createSession()
-    }
     
-    // 如果没有当前会话，选择第一个
-    if (!currentSessionId.value && sessions.value.length > 0) {
-      currentSessionId.value = sessions.value[0].id
+    // 添加到当前会话
+    currentSession.value.messages.push(useMsg)
+    
+    // 调用API
+    try {
+      const res = await sendMessageAPI(sessionId, useMsg)
+      console.log('当前消息：', res)
+      const assistantMsg: Message = {
+        id: generateMessageId(),
+        session_id: sessionId,
+        role: 'assistant',
+        content: res.data.reply,
+        created_at: new Date(),
+        status: 'sent'
+      }
+      currentSession.value.messages.push(assistantMsg)
+    } catch (error) {
+      const errorMsg: Message = {
+        id: generateMessageId(),
+        session_id: sessionId,
+        role: 'assistant',
+        content: '请求失败，请重试',
+        created_at: new Date(),
+        status: 'error',
+        errorMsg: error.message
+      }
+      currentSession.value.messages.push(errorMsg)
+    }
+
+   
+  }
+
+  const init = async () => {
+    try {
+      const res = await getAllSessions()
+      sessions.value = res.data.map(item => ({
+        ...item,
+        messages: [],
+        created_at: new Date(item.created_at),
+        updated_at: new Date(item.updated_at)
+      }))
+
+      if (sessions.value.length > 0) {
+        currentSessionId.value = sessions.value[0].id
+        await loadMessages(sessions.value[0].id)
+      }
+    } catch (error) {
+      await createSession()
+    }
+  }
+
+  const loadMessages = async (sessionId: string) => {
+    try {
+      const res = await getSessionsHistoryById(sessionId)
+      const session = sessions.value.find(s => s.id === sessionId)
+
+      if (session) {
+        session.messages = res.data.map(m => ({
+          ...m,
+          created_at: new Date(m.created_at),
+          status: 'sent' as const
+        }))
+      }
+    } catch (error) {
+      console.error('加载消息失败:', error)
+    }
+  }
+
+  // 切换会话
+  const switchSession = async (sessionId: string) => {
+    currentSessionId.value = sessionId
+    const session = sessions.value.find(s => s.id === sessionId)
+    if (session && session.messages.length === 0) {
+      await loadMessages(sessionId)
     }
   }
 
@@ -134,6 +164,7 @@ export const useChatStore = defineStore('chat', () => {
     // 方法
     createSession,
     addUserMessage,
-    init
+    init,
+    switchSession
   }
 })
