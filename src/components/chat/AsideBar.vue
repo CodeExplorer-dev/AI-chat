@@ -29,12 +29,12 @@
             <el-tooltip
               placement="bottom-start"
               effect="light"
-              class="title_more"
+              popper-class="title_more"
             >
               <template #content>
                 <div class="more_container">
                   <el-button @click="rename(session.id)">重命名</el-button>
-                  <el-button @click="remove(session.id)">删除</el-button>
+                  <el-button type="danger" @click="remove(session.id)" plain >删除</el-button>
                 </div>
               </template>
               <el-icon><MoreFilled /></el-icon>
@@ -249,9 +249,18 @@ const remove = (sessionId) => {
 }
 
 .title_more {
+  padding: 4px 0;
   .more_container {
     display: flex;
     flex-direction: column;
+
+    .el-button {
+      margin: 0;
+      border-radius: 4px;
+      justify-content: flex-start;
+      padding: 10px 16px;
+      font-size: 18px;
+    }
   }
 }
 
