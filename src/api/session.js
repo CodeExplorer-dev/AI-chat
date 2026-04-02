@@ -42,7 +42,7 @@ export const updateSessionTitle = (sessionId, title) => {
   const res = request({
     url: '/sessions/' + sessionId,
     method: 'patch',
-    title
+    data: { title }
   })
   return res
 }

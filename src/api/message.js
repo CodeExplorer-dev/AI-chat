@@ -19,7 +19,7 @@ export const chat = (sessionId, content) => {
   const res = request({
     url: `/sessions/${sessionId}/chat`,
     method: 'post',
-    content
+    data: { content }
   })
   return res
 }
