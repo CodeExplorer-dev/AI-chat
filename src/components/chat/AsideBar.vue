@@ -70,7 +70,7 @@ const emit = defineEmits(['toggle'])
 const chatStore = useChatStore()
 const sessions = computed(() => chatStore.sessions)
 const currentSessionId = computed(() => chatStore.currentSessionId)
-const { createSession, switchSession, updateSessionTitle } = chatStore
+const { createSession, switchSession, updateSessionTitle, deleteSession } = chatStore
 
 
 // const isCollapsed = ref(false)
@@ -136,6 +136,7 @@ const remove = async (sessionId) => {
     
     // 用户确认删除
     console.log('删除：', sessionId)
+    await deleteSession(sessionId)
     
     ElMessage({
       type: 'success',

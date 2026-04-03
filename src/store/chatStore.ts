@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import type { Message, Session } from '@/types/message'
-import { getAllSessions, createSession as createSessionAPI, updateSessionTitle as updateSessionTitleAPI } from '@/api/session'
+import { getAllSessions, createSession as createSessionAPI, updateSessionTitle as updateSessionTitleAPI, deleteSession as deleteSessionAPI } from '@/api/session'
 import { getSessionsHistoryById, chat as sendMessageAPI } from '@/api/message'
 import { ElMessage } from 'element-plus'
 
@@ -166,6 +166,25 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
 
+  const deleteSession = async (sessionId: string) => {
+    try {
+      await deleteSessionAPI(sessionId)
+      // 从 sessions 数组中移除
+      const index = sessions.value.findIndex(s => s.id === sessionId)
+      if (index !== -1) {
+        sessions.value.splice(index, 1)
+      }
+
+      // 如果删除的是当前会话，切换到其他会话
+      if (currentSessionId.value === sessionId) {
+        currentSessionId.value = sessions.value[0]?.id || null
+      }
+    } catch (error) {
+      ElMessage.error('修改标题失败')
+      throw error
+    }
+  }
+
   return {
     // 属性
     sessions,
@@ -179,6 +198,7 @@ export const useChatStore = defineStore('chat', () => {
     addUserMessage,
     init,
     switchSession,
-    updateSessionTitle
+    updateSessionTitle,
+    deleteSession
   }
 })
