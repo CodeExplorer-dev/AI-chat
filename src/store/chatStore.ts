@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import type { Message, Session } from '@/types/message'
-import { getAllSessions, createSession as createSessionAPI } from '@/api/session'
+import { getAllSessions, createSession as createSessionAPI, updateSessionTitle as updateSessionTitleAPI } from '@/api/session'
 import { getSessionsHistoryById, chat as sendMessageAPI } from '@/api/message'
 import { ElMessage } from 'element-plus'
 
@@ -106,8 +106,6 @@ export const useChatStore = defineStore('chat', () => {
       }
       currentSession.value.messages.push(errorMsg)
     }
-
-   
   }
 
   const init = async () => {
@@ -119,8 +117,6 @@ export const useChatStore = defineStore('chat', () => {
         created_at: new Date(item.created_at),
         updated_at: new Date(item.updated_at)
       }))
-
-      
 
       if (sessions.value.length > 0) {
         currentSessionId.value = sessions.value[0].id
@@ -157,6 +153,19 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
 
+  const updateSessionTitle = async (sessionId: string, newTitle: string) => {
+    try {
+      await updateSessionTitleAPI(sessionId, newTitle)
+      const session = sessions.value.find(s => s.id === sessionId)
+      if (session) {
+        session.title = newTitle
+      }
+    } catch (error) {
+      ElMessage.error('修改标题失败')
+      throw error
+    }
+  }
+
   return {
     // 属性
     sessions,
@@ -169,6 +178,7 @@ export const useChatStore = defineStore('chat', () => {
     createSession,
     addUserMessage,
     init,
-    switchSession
+    switchSession,
+    updateSessionTitle
   }
 })

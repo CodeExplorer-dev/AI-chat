@@ -57,7 +57,6 @@ import { Fold, Expand, Plus, MoreFilled } from '@element-plus/icons-vue'
 import { useChatStore } from '@/store/chatStore'
 import { computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { updateSessionTitle } from '@/api/session';
 
 defineProps({
   isCollapsed: {
@@ -71,7 +70,7 @@ const emit = defineEmits(['toggle'])
 const chatStore = useChatStore()
 const sessions = computed(() => chatStore.sessions)
 const currentSessionId = computed(() => chatStore.currentSessionId)
-const { createSession, switchSession } = chatStore
+const { createSession, switchSession, updateSessionTitle } = chatStore
 
 
 // const isCollapsed = ref(false)
@@ -115,7 +114,7 @@ const rename = async (session) => {
     const sessionId = session.id
     console.log(sessionId)
     console.log('新标题：', newTitle)
-    
+    await updateSessionTitle(sessionId, newTitle)
   } catch (error) {
     if (error !== 'cancel') {
       console.error('重命名出错:', error)
