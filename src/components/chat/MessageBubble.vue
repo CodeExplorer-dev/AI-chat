@@ -10,12 +10,13 @@
       <!-- 气泡 -->
       <div class="message-bubble" :class="role">
         <div class="message-content">
-          {{ content }}
+          {{ content }}<span v-if="status === 'loading'" class="cursor">|</span>
         </div>
       </div>
       
       <!-- 底部：时间 + 操作按钮 -->
       <div class="message-footer">
+
         <!-- AI消息：时间在左，操作按钮在右 -->
         <template v-if="role === 'assistant'">
           <span class="message-time">{{ formatTime(timestamp) }}</span>
@@ -268,5 +269,13 @@ const formatTime = (date) => {
 
 .message-container:hover .message-bubble {
   transform: translateY(-1px);
+}
+
+.cursor {
+  animation: blink 1s infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 </style>
