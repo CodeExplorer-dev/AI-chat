@@ -137,7 +137,7 @@ export const useChatStore = defineStore('chat', () => {
       created_at: new Date(),
       status: 'loading'
     }
-    currentSession.value.push(assistantMsg)
+    currentSession.value?.messages.push(assistantMsg)
 
     // 调用流式 API
     try {
@@ -161,6 +161,7 @@ export const useChatStore = defineStore('chat', () => {
               const parsed = JSON.parse(data)
               if (parsed.content) {
                 assistantMsg.content += parsed.content
+                console.log('流式输出:', parsed.content) 
               }
             } catch (e) {}
           }

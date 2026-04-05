@@ -78,6 +78,10 @@ const props = defineProps({
   showOperations: {
     type: Boolean,
     default: true
+  },
+  statue: {
+    type: String,
+    default: 'sent'
   }
 })
 

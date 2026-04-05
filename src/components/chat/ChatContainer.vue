@@ -49,7 +49,8 @@ const messages = computed(() => chatStore.currentMessages)
 const handleSend = () => {
   if (!inputText.value.trim()) return
   
-  chatStore.addUserMessage(inputText.value.trim())
+  // chatStore.addUserMessage(inputText.value.trim())
+  chatStore.addUserMessageStream(inputText.value.trim())
   inputText.value = ''
 }
 </script>
