@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+import type { Ref } from 'vue'
 import type { Message, Session } from '@/types/message'
 import { getAllSessions, createSession as createSessionAPI, updateSessionTitle as updateSessionTitleAPI, deleteSession as deleteSessionAPI } from '@/api/session'
 import { getSessionsHistoryById, chat as sendMessageAPI } from '@/api/message'
@@ -19,7 +20,7 @@ export const useChatStore = defineStore('chat', () => {
 
   // 当前的消息列表
   const currentMessages = computed(() => {
-    return currentSession.value?.messages || []
+    return currentSession.value?.messages?.value || []
   })
 
   // 生成会话标题
@@ -45,7 +46,7 @@ export const useChatStore = defineStore('chat', () => {
       const newSession: Session = {
         id: res.data.id,
         title: res.data.title,
-        messages: [],
+        messages: ref<Message[]>([]),
         created_at: new Date(),
         updated_at: new Date()
       }
@@ -79,7 +80,7 @@ export const useChatStore = defineStore('chat', () => {
     };
     
     // 添加到当前会话
-    currentSession.value.messages.push(userMsg)
+    currentSession.value.messages.value.push(userMsg)
     
     // 调用API
     try {
@@ -94,7 +95,7 @@ export const useChatStore = defineStore('chat', () => {
         created_at: new Date(),
         status: 'sent'
       }
-      currentSession.value.messages.push(assistantMsg)
+      currentSession.value.messages.value.push(assistantMsg)
     } catch (error) {
       const errorMsg: Message = {
         id: generateMessageId(),
@@ -105,7 +106,7 @@ export const useChatStore = defineStore('chat', () => {
         status: 'error',
         errorMsg: error.message
       }
-      currentSession.value.messages.push(errorMsg)
+      currentSession.value.messages.value.push(errorMsg)
     }
   }
 
@@ -126,10 +127,10 @@ export const useChatStore = defineStore('chat', () => {
       created_at: new Date(),
       status: 'sent'
     }
-    currentSession.value?.messages.push(userMsg)
+    currentSession.value?.messages.value.push(userMsg)
 
     // 创建 AI 消息占位（空内容）
-    const assistantMsg: Message = {
+    const assistantMsg = {
       id: generateMessageId(),
       session_id: sessionId,
       role: 'assistant',
@@ -137,7 +138,7 @@ export const useChatStore = defineStore('chat', () => {
       created_at: new Date(),
       status: 'loading'
     }
-    currentSession.value?.messages.push(assistantMsg)
+    currentSession.value?.messages.value.push(assistantMsg)
 
     // 调用流式 API
     try {
@@ -183,7 +184,7 @@ export const useChatStore = defineStore('chat', () => {
       const res = await getAllSessions()
       sessions.value = res.data.map(item => ({
         ...item,
-        messages: [],
+        messages: ref<Message[]>([]),
         created_at: new Date(item.created_at),
         updated_at: new Date(item.updated_at)
       }))
@@ -203,7 +204,7 @@ export const useChatStore = defineStore('chat', () => {
       const session = sessions.value.find(s => s.id === sessionId)
 
       if (session) {
-        session.messages = res.data.map(m => ({
+        session.messages.value = res.data.map(m => ({
           ...m,
           created_at: new Date(m.created_at),
           status: 'sent' as const
@@ -218,7 +219,7 @@ export const useChatStore = defineStore('chat', () => {
   const switchSession = async (sessionId: string) => {
     currentSessionId.value = sessionId
     const session = sessions.value.find(s => s.id === sessionId)
-    if (session && session.messages.length === 0) {
+    if (session && session.messages.value.length === 0) {
       await loadMessages(sessionId)
     }
   }

@@ -1,3 +1,5 @@
+import type { Ref } from 'vue'
+
 export interface Message {
   id: number,
   session_id: string
@@ -11,7 +13,7 @@ export interface Message {
 export interface Session {
   id: string,
   title: string,
-  messages: Message[],
+  messages: Ref<Message[]>,
   created_at: Date,
   updated_at: Date
 }
