@@ -4,6 +4,7 @@ import type { Message, Session } from '@/types/message'
 import { getAllSessions, createSession as createSessionAPI, updateSessionTitle as updateSessionTitleAPI, deleteSession as deleteSessionAPI } from '@/api/session'
 import { getSessionsHistoryById, chat as sendMessageAPI } from '@/api/message'
 import { ElMessage } from 'element-plus'
+import { chatStream } from '@/api/stream'
 
 export const useChatStore = defineStore('chat', () => {
   // 状态
@@ -108,6 +109,74 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
 
+  const addUserMessageStream = async (content: string) => {
+    // 如果没有当前会话，创建一个
+    if (!currentSession.value) {
+      await createSession()
+    }
+
+    const sessionId = currentSessionId.value!
+
+    // 添加用户消息
+    const userMsg: Message = {
+      id: generateMessageId(),
+      session_id: sessionId,
+      role: 'user',
+      content,
+      created_at: new Date(),
+      status: 'sent'
+    }
+    currentSession.value?.messages.push(userMsg)
+
+    // 创建 AI 消息占位（空内容）
+    const assistantMsg: Message = {
+      id: generateMessageId(),
+      session_id: sessionId,
+      role: 'assistant',
+      content: '',
+      created_at: new Date(),
+      status: 'loading'
+    }
+    currentSession.value.push(assistantMsg)
+
+    // 调用流式 API
+    try {
+      const response = await chatStream(sessionId, content)
+      const reader = response.body?.getReader()
+      const decoder = new TextDecoder()
+
+      while(true) {
+        const { done, value } = await reader?.read()
+        if (done) break
+
+        const chunk = decoder.decode(value, { stream: true })
+        const lines = chunk.split('\n')
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6)
+            if (data === '[DONE]') continue
+
+            try {
+              const parsed = JSON.parse(data)
+              if (parsed.content) {
+                assistantMsg.content += parsed.content
+              }
+            } catch (e) {}
+          }
+        }
+      }
+
+      // 流式结束，更新状态
+      assistantMsg.status = 'sent'
+    } catch (error) {
+      assistantMsg.content = '请求失败，请重试'
+      assistantMsg.status = 'error'
+      assistantMsg.errorMsg = error.message
+    }
+
+  }
+
   const init = async () => {
     try {
       const res = await getAllSessions()
@@ -196,6 +265,7 @@ export const useChatStore = defineStore('chat', () => {
     // 方法
     createSession,
     addUserMessage,
+    addUserMessageStream,
     init,
     switchSession,
     updateSessionTitle,
